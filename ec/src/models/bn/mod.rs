@@ -200,6 +200,34 @@ impl<P: BnConfig> Bn<P> {
         }
     }
 
+    /// coeff_1 = -p.x / p.y
+    /// coeff_2 = 1 / p.y
+    fn ell_new(
+        f: &mut Fp12<P::Fp12Config>,
+        coeffs: &g2::EllCoeff<P>,
+        coeff_1: &P::Fp,
+        coeff_2: &P::Fp,
+    ) {
+        // c0 is always 1
+        let mut c0 = coeffs.0;
+        let mut c1 = coeffs.1;
+        let mut c2 = coeffs.2;
+
+        match P::TWIST_TYPE {
+            // TwistType::M => {
+            //     c2.mul_assign_by_fp(&coeff_1);
+            //     c1.mul_assign_by_fp(&coeff_2);
+            //     f.mul_by_014(&c0, &c1, &c2);
+            // },
+            TwistType::D => {
+                c1.mul_assign_by_fp(&coeff_1);
+                c2.mul_assign_by_fp(&coeff_2);
+                f.mul_by_034(&c0, &c1, &c2);
+            },
+            _ => {},
+        }
+    }
+
     fn exp_by_neg_x(mut f: Fp12<P::Fp12Config>) -> Fp12<P::Fp12Config> {
         f = f.cyclotomic_exp(P::X);
         if !P::X_IS_NEGATIVE {
