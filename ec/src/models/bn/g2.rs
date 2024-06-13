@@ -1,11 +1,13 @@
+use core::{ops::Add, ops::Div, ops::Mul, ops::MulAssign, ops::Sub};
+
 use ark_ff::{
-    fields::{Field, Fp2},
+    fields::{Field, Fp, Fp2},
     AdditiveGroup,
 };
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::vec::*;
 use derivative::Derivative;
-use num_traits::One;
+use num_traits::{zero, One};
 
 use crate::{
     bn::{BnConfig, TwistType},
@@ -51,52 +53,77 @@ pub struct G2HomProjective<P: BnConfig> {
 
 impl<P: BnConfig> G2HomProjective<P> {
     pub fn double_in_place(&mut self, two_inv: &P::Fp) -> EllCoeff<P> {
-        // Formula for line function when working with
-        // homogeneous projective coordinates.
+        //  for affine coordinates
+        //  ## slope: alpha = 3 * x^2 / 2 * y
+        //  alpha = x.square().mul_scalar(Fp(3)).mul(y.mul_scalar(Fp(2)).inverse())
+        //  bias = y - alpha * x
+        //
+        //  for projective coordinates
+        // alpha = 3 * x^2 / 2 * y * z
+        // bias = (y - alpha * x * z) / z^3
+        //  alpha = x.square().mul_scalar(Fp(3)).mul(y.mul(z).double().inverse())
+        //  bias = y.sub(alpha.mul(x).mul(z)).mul(z.square().mul(z).inverse())
+        let three = P::Fp::one().double().add(P::Fp::one());
+        let mut alpha = self.x.square();
+        alpha.mul_assign_by_fp(&three);
+        alpha.mul_assign_by_fp(two_inv);
+        alpha /= self.y * self.z;
+        // let e = P::G2Config::COEFF_B * &(c.double() + &c);
 
-        let mut a = self.x * &self.y;
-        a.mul_assign_by_fp(two_inv);
-        let b = self.y.square();
-        let c = self.z.square();
-        let e = P::G2Config::COEFF_B * &(c.double() + &c);
-        let f = e.double() + &e;
-        let mut g = b + &f;
-        g.mul_assign_by_fp(two_inv);
-        let h = (self.y + &self.z).square() - &(b + &c);
-        let i = e - &b;
-        let j = self.x.square();
-        let e_square = e.square();
+        let bias = (self.y - alpha * self.x * self.z) / (self.z.square() * self.z);
 
-        self.x = a * &(b - &f);
-        self.y = g.square() - &(e_square.double() + &e_square);
-        self.z = b * &h;
-        match P::TWIST_TYPE {
-            TwistType::M => (i, j.double() + &j, -h),
-            TwistType::D => (-h, j.double() + &j, i),
-        }
+        (alpha, bias, Fp2::<P::Fp2Config>::ZERO)
     }
-
     pub fn add_in_place(&mut self, q: &G2Affine<P>) -> EllCoeff<P> {
-        // Formula for line function when working with
-        // homogeneous projective coordinates.
-        let theta = self.y - &(q.y * &self.z);
-        let lambda = self.x - &(q.x * &self.z);
-        let c = theta.square();
-        let d = lambda.square();
-        let e = lambda * &d;
-        let f = self.z * &c;
-        let g = self.x * &d;
-        let h = e + &f - &g.double();
-        self.x = lambda * &h;
-        self.y = theta * &(g - &h) - &(e * &self.y);
-        self.z *= &e;
-        let j = theta * &q.x - &(lambda * &q.y);
-
-        match P::TWIST_TYPE {
-            TwistType::M => (j, -theta, lambda),
-            TwistType::D => (lambda, -theta, j),
-        }
+        todo!()
     }
+    // pub fn double_in_place(&mut self, two_inv: &P::Fp) -> EllCoeff<P> {
+    //     // Formula for line function when working with
+    //     // homogeneous projective coordinates.
+
+    //     let mut a = self.x * &self.y;
+    //     a.mul_assign_by_fp(two_inv);
+    //     let b = self.y.square();
+    //     let c = self.z.square();
+    //     let e = P::G2Config::COEFF_B * &(c.double() + &c);
+    //     let f = e.double() + &e;
+    //     let mut g = b + &f;
+    //     g.mul_assign_by_fp(two_inv);
+    //     let h = (self.y + &self.z).square() - &(b + &c);
+    //     let i = e - &b;
+    //     let j = self.x.square();
+    //     let e_square = e.square();
+
+    //     self.x = a * &(b - &f);
+    //     self.y = g.square() - &(e_square.double() + &e_square);
+    //     self.z = b * &h;
+    //     match P::TWIST_TYPE {
+    //         TwistType::M => (i, j.double() + &j, -h),
+    //         TwistType::D => (-h, j.double() + &j, i),
+    //     }
+    // }
+
+    // pub fn add_in_place(&mut self, q: &G2Affine<P>) -> EllCoeff<P> {
+    //     // Formula for line function when working with
+    //     // homogeneous projective coordinates.
+    //     let theta = self.y - &(q.y * &self.z);
+    //     let lambda = self.x - &(q.x * &self.z);
+    //     let c = theta.square();
+    //     let d = lambda.square();
+    //     let e = lambda * &d;
+    //     let f = self.z * &c;
+    //     let g = self.x * &d;
+    //     let h = e + &f - &g.double();
+    //     self.x = lambda * &h;
+    //     self.y = theta * &(g - &h) - &(e * &self.y);
+    //     self.z *= &e;
+    //     let j = theta * &q.x - &(lambda * &q.y);
+
+    //     match P::TWIST_TYPE {
+    //         TwistType::M => (j, -theta, lambda),
+    //         TwistType::D => (lambda, -theta, j),
+    //     }
+    // }
 }
 
 impl<P: BnConfig> Default for G2Prepared<P> {
