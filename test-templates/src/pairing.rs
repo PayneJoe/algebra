@@ -8,11 +8,14 @@ macro_rules! test_pairing {
             use ark_std::{test_rng, One, UniformRand, Zero};
             #[test]
             fn test_bilinearity() {
-                for _ in 0..1 {
-                    let mut rng = test_rng();
-                    let a: <$Pairing as Pairing>::G1 = UniformRand::rand(&mut rng);
-                    let b: <$Pairing as Pairing>::G2 = UniformRand::rand(&mut rng);
-                    let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(&mut rng);
+                for _ in 0..ITERATIONS {
+                    let rng = &mut test_rng();
+                    // let a: <$Pairing as Pairing>::G1 = UniformRand::rand(&mut rng);
+                    // let b: <$Pairing as Pairing>::G2 = UniformRand::rand(&mut rng);
+                    // let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(&mut rng);
+                    let a = <$Pairing as Pairing>::G1::rand(rng);
+                    let b = <$Pairing as Pairing>::G2::rand(rng);
+                    let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(rng);
 
                     let sa = a * s;
                     let sb = b * s;
