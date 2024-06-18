@@ -223,11 +223,11 @@ impl<P: BnConfig> Bn<P> {
         let mut c2 = coeffs.2;
 
         match P::TWIST_TYPE {
-            // TwistType::M => {
-            //     c2.mul_assign_by_fp(&coeff_1);
-            //     c1.mul_assign_by_fp(&coeff_2);
-            //     f.mul_by_014(&c0, &c1, &c2);
-            // },
+            TwistType::M => {
+                c1.mul_assign_by_fp(&coeff_1);
+                c2.mul_assign_by_fp(&coeff_2);
+                f.mul_by_014(&c0, &c1, &c2);
+            },
             TwistType::D => {
                 c1.mul_assign_by_fp(&coeff_1);
                 c2.mul_assign_by_fp(&coeff_2);
