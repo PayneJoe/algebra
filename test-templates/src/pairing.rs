@@ -17,9 +17,9 @@ macro_rules! test_pairing {
                     let sa = a * s;
                     let sb = b * s;
 
-                    let ans1 = <$Pairing>::pairing(sa, b);
-                    let ans2 = <$Pairing>::pairing(a, sb);
-                    let ans3 = <$Pairing>::pairing(a, b) * s;
+                    let ans1 = <$Pairing>::pairing(sa.into_affine(), b.into_affine());
+                    let ans2 = <$Pairing>::pairing(a.into_affine(), sb.into_affine());
+                    let ans3 = <$Pairing>::pairing(a.into_affine(), b.into_affine()) * s;
 
                     assert_eq!(ans1, ans2);
                     // assert_eq!(ans2, ans3);
