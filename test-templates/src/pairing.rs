@@ -13,10 +13,6 @@ macro_rules! test_pairing {
                     let a: <$Pairing as Pairing>::G1 = UniformRand::rand(&mut rng);
                     let b: <$Pairing as Pairing>::G2 = UniformRand::rand(&mut rng);
                     let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(&mut rng);
-                    // let rng = &mut test_rng();
-                    // let a = <$Pairing as Pairing>::G1::rand(rng);
-                    // let b = <$Pairing as Pairing>::G2::rand(rng);
-                    // let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(rng);
 
                     let sa = a * s;
                     let sb = b * s;
