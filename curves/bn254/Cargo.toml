@@ -17,13 +17,17 @@ edition = "2021"
 # ark-ec = { version= "0.4.0", default-features = false }
 ark-ff = {git = "https://github.com/PayneJoe/algebra"}
 ark-ec = {git = "https://github.com/PayneJoe/algebra"}
-ark-std = { version = "0.4.0", default-features = false }
+# ark-std = { version = "0.4.0", default-features = false }
+ark-std = { git = "https://github.com/arkworks-rs/std" }
 ark-r1cs-std = { version = "0.4.0", default-features = false, optional = true }
 
 [dev-dependencies]
-ark-serialize = { version = "0.4.0", default-features = false }
-ark-algebra-test-templates = { version = "0.4.0", default-features = false }
-ark-algebra-bench-templates = { version = "0.4.0", default-features = false }
+# ark-serialize = { version = "0.4.0", default-features = false }
+ark-serialize = {git = "https://github.com/PayneJoe/algebra"}
+ark-algebra-test-templates = {git = "https://github.com/PayneJoe/algebra"}
+ark-algebra-bench-templates = {git = "https://github.com/PayneJoe/algebra"}
+# ark-algebra-test-templates = { version = "0.4.0", default-features = false }
+# ark-algebra-bench-templates = { version = "0.4.0", default-features = false }
 ark-curve-constraint-tests = { path = "../curve-constraint-tests", default-features = false }
 ark-relations = { version = "0.4.0", default-features = false }
 
