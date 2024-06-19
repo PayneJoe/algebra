@@ -9,13 +9,14 @@ macro_rules! test_pairing {
             #[test]
             fn test_bilinearity() {
                 for _ in 0..ITERATIONS {
-                    let rng = &mut test_rng();
-                    // let a: <$Pairing as Pairing>::G1 = UniformRand::rand(&mut rng);
-                    // let b: <$Pairing as Pairing>::G2 = UniformRand::rand(&mut rng);
-                    // let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(&mut rng);
-                    let a = <$Pairing as Pairing>::G1::rand(rng);
-                    let b = <$Pairing as Pairing>::G2::rand(rng);
-                    let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(rng);
+                    let mut rng = test_rng();
+                    let a: <$Pairing as Pairing>::G1 = UniformRand::rand(&mut rng);
+                    let b: <$Pairing as Pairing>::G2 = UniformRand::rand(&mut rng);
+                    let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(&mut rng);
+                    // let rng = &mut test_rng();
+                    // let a = <$Pairing as Pairing>::G1::rand(rng);
+                    // let b = <$Pairing as Pairing>::G2::rand(rng);
+                    // let s: <$Pairing as Pairing>::ScalarField = UniformRand::rand(rng);
 
                     let sa = a * s;
                     let sb = b * s;
@@ -25,16 +26,16 @@ macro_rules! test_pairing {
                     let ans3 = <$Pairing>::pairing(a.into_affine(), b.into_affine()) * s;
 
                     assert_eq!(ans1, ans2);
-                    // assert_eq!(ans2, ans3);
+                    assert_eq!(ans2, ans3);
 
-                    // assert_ne!(ans1, PairingOutput::zero());
-                    // assert_ne!(ans2, PairingOutput::zero());
-                    // assert_ne!(ans3, PairingOutput::zero());
-                    // let group_order = <<$Pairing as Pairing>::ScalarField>::characteristic();
+                    assert_ne!(ans1, PairingOutput::zero());
+                    assert_ne!(ans2, PairingOutput::zero());
+                    assert_ne!(ans3, PairingOutput::zero());
+                    let group_order = <<$Pairing as Pairing>::ScalarField>::characteristic();
 
-                    // assert_eq!(ans1.mul_bigint(group_order), PairingOutput::zero());
-                    // assert_eq!(ans2.mul_bigint(group_order), PairingOutput::zero());
-                    // assert_eq!(ans3.mul_bigint(group_order), PairingOutput::zero());
+                    assert_eq!(ans1.mul_bigint(group_order), PairingOutput::zero());
+                    assert_eq!(ans2.mul_bigint(group_order), PairingOutput::zero());
+                    assert_eq!(ans3.mul_bigint(group_order), PairingOutput::zero());
                 }
             }
 
