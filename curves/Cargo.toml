@@ -69,6 +69,7 @@ debug-assertions = true
 debug = true
 
 [patch.crates-io]
+ark-std = { git = "https://github.com/arkworks-rs/std" }
 ark-ff = { path = "../ff" }
 ark-ec = { path = "../ec" }
 ark-poly = { path = "../poly" }
