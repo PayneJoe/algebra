@@ -63,6 +63,8 @@ pub fn affine_double_in_place<P: BnConfig>(
     let bias = t.y - alpha * t.x;
 
     // update T
+    // T.x = alpha^2 - 2 * t.x
+    // T.y = -bias - alpha * T.x
     let tx = alpha.square() - t.x.double();
     t.y = -bias - alpha.mul(tx);
     t.x = tx;
@@ -77,6 +79,8 @@ pub fn affine_add_in_place<P: BnConfig>(t: &mut G2Affine<P>, q: &G2Affine<P>) ->
     let bias = t.y - alpha * t.x;
 
     // update T
+    // T.x = alpha^2 - t.x - q.x
+    // T.y = -bias - alpha * T.x
     let tx = alpha.square() - t.x - q.x;
     t.y = -bias - alpha.mul(tx);
     t.x = tx;
